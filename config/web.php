@@ -46,8 +46,30 @@ $config = [
             ],
         ],
         */
+
+
     ],
     'params' => $params,
+
+    /*
+       catchAll,
+       controllerMap,
+       language,
+       modules,
+       name,
+       sourceLanguage,
+       timeZone,
+       version,
+       charset,
+       defaultRoute,
+       extensions,
+       layout,
+       layoutPath,
+        runtimePath,
+        viewPath,
+        vendorPath,
+
+       */
 ];
 
 if (YII_ENV_DEV) {
