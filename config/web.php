@@ -6,9 +6,9 @@ $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
-    'import'=>[
-        'app\modules\rights.*',
-        'app\modules\rights\components.*',
+    'aliases' => [
+        '@mdm/admin' => 'app\vendor\mdmsoft\yii2-admin'
+
     ],
     'components' => [
         'request' => [
@@ -18,15 +18,16 @@ $config = [
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
-//        'user' => [
-//            'identityClass' => 'app\models\User',
-//            'enableAutoLogin' => true,
-//        ],
-        'user'=>[
-            'class'=>'RWebUser',   // Allows super users access implicitly.
+        'user' => [
+            'identityClass' => 'mdm\admin\models\User',
+            'enableAutoLogin' => true,
         ],
-        'authManager'=>[
-            'class'=>'RDbAuthManager',   // Provides support authorization item sorting.
+//        'user' => [
+//            'class' => 'app\components\User',
+//            'identityClass' => 'dektrium\user\models\User',
+//        ],
+        'authManager' => [
+            'class' => 'yii\rbac\DBManager', // or use 'yii\rbac\DbManager'
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -60,26 +61,48 @@ $config = [
 
     ],
     'modules'=>[
-        'rights'=>[
-            'install'=>true,   // Enables the installer.
-            'superuserName'=>'Admin',   // Name of the role with super user privileges.
-            //'authenticatedName'=>'Authenticated',  // Name of the authenticated user role.
-            //'userIdColumn'=>'id',    // Name of the user id column in the database.
-            //'userNameColumn'=>'username',   // Name of the user name column in the database.
-            //'enableBizRule'=>true,    // Whether to enable authorization item business rules.
-            //'enableBizRuleData'=>false,    // Whether to enable data for business rules.
-            // 'displayDescription'=>true,   // Whether to use item description instead of name.
-            //'flashSuccessKey'=>'RightsSuccess',  // Key to use for setting success flash messages.
-            // 'flashErrorKey'=>'RightsError',  // Key to use for setting error flash messages.
-            // 'install'=>true,    // Whether to install rights.
-            //'baseUrl'=>'/rights',   // Base URL for Rights. Change if module is nested.
-            //'layout'=>'rights.views.layouts.main',  // Layout to use for displaying Rights.
-            //'appLayout'=>'application.views.layouts.main', // Application layout.
-            // 'cssFile'=>'rights.css',   // Style sheet file to use for Rights.
-            // 'install'=>false,    // Whether to enable installer.
-            //'debug'=>false,
-        ],
+//        'user' => [
+//            'class' => 'dektrium\user\Module',
+//            'admins' => ['hamed']
+//        ],
+
+         'admin' => [
+             'class' => 'mdm\admin\Module',
+             'layout' => 'right-menu', // it can be '@path/to/your/layout'.
+             'controllerMap' => [
+                 'assignment' => [
+                     'class' => 'mdm\admin\controllers\AssignmentController',
+                     'userClassName' => 'mdm\admin\models\User',
+                     'idField' => 'user_id'
+                 ],
+                 'other' => [
+                     'class' => 'path\to\OtherController', // add another controller
+                 ],
+             ],
+             'menus' => [
+                 'assignment' => [
+                     'label' => 'Grand Access' // change label
+                 ],
+                 'route' => null, // disable menu route
+             ]
+         ]
     ],
+    'as access' => [
+        'class' => 'mdm\admin\components\AccessControl',
+        'allowActions' => [
+            'site/login',
+            'site/error',
+            'site/*',
+            'admin/*',
+            'some-controller/some-action',
+            // The actions listed here will be allowed to everyone including guests.
+            // So, 'admin/*' should not appear here in the production, of course.
+            // But in the earlier stages of your development, you may probably want to
+            // add a lot of actions here until you finally completed setting up rbac,
+            // otherwise you may not even take a first step.
+        ]
+    ],
+
     'params' => $params,
 
     /*
